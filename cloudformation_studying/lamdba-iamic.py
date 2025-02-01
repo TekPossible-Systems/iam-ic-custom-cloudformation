@@ -114,6 +114,3 @@ def lambda_handler(event, context):
         print(str(e))
         response_data['Data'] = str(e)
         cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
-            
-    
-
