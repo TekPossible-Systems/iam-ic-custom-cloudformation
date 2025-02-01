@@ -67,7 +67,6 @@ def lambda_handler(event, context):
     try:
         iamic = boto3.client('identitystore')
         event_type = event['RequestType']
-        print(event_type)
         # Get parameters from CRD
         resource_type = event['ResourceProperties']['Type'] # Must be one of User,Group
         if str(resource_type) not in ['User', 'Group']:
@@ -75,6 +74,7 @@ def lambda_handler(event, context):
             cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
             raise Exception
         
+        print("Action Requested - " + event_type + ": " + resource_type)
         # Okay so at least that was defined! Next to check the identity store id!
 
         identitystore_id =  event['ResourceProperties']['IdentityStoreID']
