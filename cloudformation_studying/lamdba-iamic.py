@@ -3,7 +3,7 @@
 import boto3
 import cfnresponse
 
-def handler(event, context):
+def lambda_handler(event, context):
     iam_idc = boto3.client('identitystore')
     response_data = {}
 
