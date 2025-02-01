@@ -38,6 +38,7 @@ def create_user(event,context, iamic, response_data, identitystore_id):
         print("Exception was found: \n" + str(e))
         response_data['Data'] = str(e)
         cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
+        
 def create_group(event,context, iamic, response_data, identitystore_id):
     try:
         display_name = event['ResourceProperties']['DisplayName']
@@ -70,7 +71,7 @@ def lambda_handler(event, context):
         # Get parameters from CRD
         resource_type = event['ResourceProperties']['Type'] # Must be one of User,Group
         if str(resource_type) not in ['User', 'Group']:
-            response_data['Data'] = "The request type for this CRD must either be User or Group. Dieing of sadness!"
+            response_data['Data'] = "The request type for this resource must either be User or Group. Dieing of sadness!"
             cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
             raise Exception
         
