@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  InstanceType:
+    Type: String
+    Description: Damn thats a pretty big instance
+    Default: m4.xlarge
+Resources:
+  JoemamaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: Joemama-SG
+      GroupDescription: Joemama Security Group
+      VpcId: vpc-0cda42eef36f0b4d7
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - EC2-SSM
+  Joemama:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-018875e7376831abe
+      InstanceType: !Ref InstanceType
+      Monitoring: true
+      IamInstanceProfile: !Ref InstanceProfile
+      SecurityGroupIds:
+        - !Ref JoemamaSecurityGroup
+      UserData: !Base64 |
+        #!/bin/bash -ex
+        echo "Joemama"
+      Tags:
+        - Key: Name
+          Value: Joemama
