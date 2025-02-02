@@ -59,9 +59,40 @@ def create_group(event,context, iamic, response_data, identitystore_id):
 
 # def update_group(event, context, iamic, response_data, identitystore_id):
 
-# def delete_user(event, context, iamic, response_data, identitystore_id):
+def delete_user(event, context, iamic, response_data, identitystore_id):
+    username = event['ResourceProperties']['UserName']
+    user_attrs = iamic.list_users(
+        IdentityStoreId=identitystore_id,
+        MaxResults=1,
+        Filters=[{
+            'AttributePath': 'UserName',
+            'AttributeValue': username
+        }]
+    )
+    iamic.delete_user(
+        IdentityStoreId=identitystore_id,
+        UserId=user_attrs['Users'][0]['UserId']
+    )
 
-# def delete_group(event, context, iamic, response_data, identitystore_id):
+    response_data = user_attrs['Users'][0]
+    cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data)
+
+def delete_group(event, context, iamic, response_data, identitystore_id):
+    display_name = event['ResourceProperties']['DisplayName']
+    group_attrs = iamic.list_groups(
+        IdentityStoreId=identitystore_id,
+        MaxResults=1,
+        Filters=[{
+            'AttributePath': 'DisplayName',
+            'AttributeValue': display_name
+        }]       
+    )
+    iamic.delete_group(
+        IdentityStoreId=identitystore_id,
+        GroupId=group_attrs['Groups'][0]['GroupId']       
+    )
+    response_data = group_attrs['Groups'][0]
+    cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data)
 
 def lambda_handler(event, context):
     response_data = {}
@@ -94,12 +125,10 @@ def lambda_handler(event, context):
 
         elif event_type == 'Delete':
             if resource_type == 'User':
-                print('Not yet implemented!')     
-                cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
+                delete_user(event, context, iamic, response_data, identitystore_id) 
 
             elif resource_type == 'Group':
-                print('Not yet implemented!')
-                cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
+                delete_group(event, context, iamic, response_data, identitystore_id) 
 
         elif event_type == 'Update':
             if resource_type == 'User':
